@@ -1,7 +1,10 @@
 ﻿using CloudsLibrary.Cloud.YandexDisk;
+using CloudsLibrary.Cloud.YandexDisk.FilesSystem;
 using CloudsLibrary.Cloud.YandexDisk.System;
 using CloudsLibrary.REST;
 using CloudsLibrary.System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,6 +47,9 @@ namespace CloudTest
                 Information.YDInformation.SetToken(await FileIO.ReadTextAsync(tokenFile));
                 yandexDiskWorker = new YandexDiskWorker();
                 Information.YDInformation.SetInformation(await yandexDiskWorker.YandexClient.GetStringAsync("https://cloud-api.yandex.net/v1/disk"));
+                var test = JObject.Parse(await yandexDiskWorker.YandexClient.GetStringAsync("https://cloud-api.yandex.net/v1/disk/resources?path=disk%3A%2F&limit=1"));
+                var items = JsonConvert.DeserializeObject<YDJsonFile>((test["_embedded"])["items"][0].ToString());
+
            }
            else
            {
