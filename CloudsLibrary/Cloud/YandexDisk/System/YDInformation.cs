@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,10 +11,10 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
         public static string Token { get; set; } = "";
 
         public YDUser UserInformation { get; set; }
-        public int MaxFileSize { get; set; } = 0;
-        public int TotalSpace { get; set; } = 0;
-        public int UsedSpace { get; set; } = 0;
-        public int TrashSize { get; set; } = 0;
+        public double MaxFileSize { get; set; } = 0;
+        public double TotalSpace { get; set; } = 0;
+        public double UsedSpace { get; set; } = 0;
+        public double TrashSize { get; set; } = 0;
         public bool UnlimitedAutouploadEnabled { get; set; } = false;
         public bool IsPaid { get; set; } = false;
 
@@ -31,8 +32,27 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
 
         public void SetInformation(string jsonInformation)
         {
-            var js = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonInformation);
+            var nodes = JObject.Parse(jsonInformation);
+            MaxFileSize = double.Parse(nodes["max_file_size"].ToString());
+            TotalSpace = double.Parse(nodes["total_space"].ToString());
+            UsedSpace = double.Parse(nodes["used_space"].ToString());
+            TrashSize = double.Parse(nodes["trash_size"].ToString());
+            UnlimitedAutouploadEnabled = bool.Parse(nodes["unlimited_autoupload_enabled"].ToString());
+            IsPaid = bool.Parse(nodes["is_paid"].ToString());
             
+            var folders = JObject.Parse(nodes["system_folders"].ToString());
+
+            OdnoklasnikiFolderPath = folders["odnoklassniki"].ToString();
+            GoogleFolderPath = folders["google"].ToString();
+            InstagramFolderPath = folders["instagram"].ToString();
+            VkFolderPath = folders["vkontakte"].ToString();
+            MailRuFolderPath = folders["mailru"].ToString();
+            DownloadsFolderPath = folders["downloads"].ToString();
+            ApplicationsFolderPath = folders["applications"].ToString();
+            FacebookFolderPath = folders["facebook"].ToString();
+            SocialFolderPath = folders["social"].ToString();
+            ScreenshotsFolderPath = folders["screenshots"].ToString();
+            PhotosFolderPath = folders["photostream"].ToString();
         }
         public bool SetTokenAsUri(string uri)
         {
