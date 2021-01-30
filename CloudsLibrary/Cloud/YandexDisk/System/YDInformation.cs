@@ -5,11 +5,26 @@ using System.Text;
 
 namespace CloudsLibrary.Cloud.YandexDisk.System
 {
+
+    /// <summary>
+    /// Хранит информацию о диске
+    /// </summary>
     public class YDInformation
     {
+        #region Events
+        /// <summary>
+        /// Делегат для событий без параметров
+        /// </summary>
+        internal delegate void EmptyEventsD();
+        /// <summary>
+        /// Системное событие сигнализирующее об успешном получении токена.
+        /// </summary>
+        internal event EmptyEventsD TokenReceived;
+        #endregion
         public static string TokenRequestString { get; set; } = "https://passport.yandex.ru/auth?retpath=https%3A%2F%2Foauth.yandex.ru%2Fauthorize%3Fresponse_type%3Dtoken%26client_id%3D0d41a78f77084835b7d32ef535121cac&noreturn=1&origin=oauth";
         public static string Token { get; set; } = "";
 
+        #region Information
         public YDUser UserInformation { get; set; }
         public double MaxFileSize { get; set; } = 0;
         public double TotalSpace { get; set; } = 0;
@@ -29,7 +44,13 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
         public string SocialFolderPath { get; set; }
         public string ScreenshotsFolderPath { get; set; }
         public string PhotosFolderPath { get; set; }
+        #endregion
 
+        #region SetMetods      
+        /// <summary>
+        /// Получает и обрабатывает основную информацию о диске.
+        /// </summary>
+        /// <param name="jsonInformation">Строка - JSON с информацией</param>
         public void SetInformation(string jsonInformation)
         {
             var nodes = JObject.Parse(jsonInformation);
@@ -39,7 +60,7 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
             TrashSize = double.Parse(nodes["trash_size"].ToString());
             UnlimitedAutouploadEnabled = bool.Parse(nodes["unlimited_autoupload_enabled"].ToString());
             IsPaid = bool.Parse(nodes["is_paid"].ToString());
-            
+
             var folders = JObject.Parse(nodes["system_folders"].ToString());
 
             OdnoklasnikiFolderPath = folders["odnoklassniki"].ToString();
@@ -54,6 +75,11 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
             ScreenshotsFolderPath = folders["screenshots"].ToString();
             PhotosFolderPath = folders["photostream"].ToString();
         }
+        /// <summary>
+        /// Способ получения токена из ссылки
+        /// </summary>
+        /// <param name="uri">Ссылка в которой содержится токен</param>
+        /// <returns></returns>
         public bool SetTokenAsUri(string uri)
         {
             try
@@ -66,9 +92,25 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
                 return false;
             }
         }
+        /// <summary>
+        /// Способ непосредственно задать токен
+        /// </summary>
+        /// <param name="token">Строка содержащая токен</param>
         public void SetToken(string token)
         {
             YDInformation.Token = token;
+            OnTokenReceived();
         }
+        #endregion
+
+        #region Invokers
+        /// <summary>
+        /// Вызиывает событие успешного получения токена
+        /// </summary>
+        private void OnTokenReceived()
+        {
+            TokenReceived?.Invoke();
+        }
+        #endregion
     }
 }

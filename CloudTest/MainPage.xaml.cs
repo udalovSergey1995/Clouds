@@ -13,6 +13,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.BackgroundTransfer;
 using Windows.Security.Authentication.Web;
 using Windows.Storage;
 using Windows.UI.ViewManagement;
@@ -36,7 +37,26 @@ namespace CloudTest
             this.InitializeComponent();
             Auth();
         }
-       private async void Auth()
+
+        private void GetEvents()
+        {
+            yandexDiskWorker.YandexClient.FileUpload += async (RemotePath, LocalPath) =>
+            {
+                try
+                {
+                    Uri uri = new Uri(RemotePath);
+                    StorageFile file = await StorageFile.GetFileFromPathAsync(LocalPath);
+                    BackgroundUploader uploader = new BackgroundUploader();
+                    uploader.SetRequestHeader("Filename", file.Name);
+                    UploadOperation upload = uploader.CreateUpload(uri, file);
+                    UploadMonitoring(upload);
+                }
+                catch (Exception ex)
+                {}
+            };
+        }
+
+        private async void Auth()
        {
            var localPath = ApplicationData.Current.LocalFolder.Path;
            var tokenFilePath = localPath + "\\" + "token.txt";
@@ -84,5 +104,9 @@ namespace CloudTest
                bool viewShown = await ApplicationViewSwitcher.TryShowAsViewModeAsync(newViewId, ApplicationViewMode.CompactOverlay);
            }
        }
+        private async void UploadMonitoring(UploadOperation operation)
+        {
+            
+        }
    }
 }
