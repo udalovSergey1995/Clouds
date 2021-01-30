@@ -20,7 +20,7 @@ namespace CloudsLibrary.Cloud.YandexDisk
         /// </summary>
         public YandexClient YandexClient {
             get {
-                if (_yandexClient == null)
+                if (DiskInformation.IsTokenRecivied == null)
                 {
                     throw new Exception("Клиент еще не создан. Необходимо получить токен для работы с облаком");
                 }
