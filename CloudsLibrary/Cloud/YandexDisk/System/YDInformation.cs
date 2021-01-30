@@ -21,7 +21,7 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
         /// </summary>
         internal event EmptyEventsD TokenReceived;
         #endregion
-        public string TokenRequestString { get; set; } = "https://passport.yandex.ru/auth?retpath=https%3A%2F%2Foauth.yandex.ru%2Fauthorize%3Fresponse_type%3Dtoken%26client_id%3D0d41a78f77084835b7d32ef535121cac&noreturn=1&origin=oauth";
+        public static string TokenRequestString { get; set; } = "https://passport.yandex.ru/auth?retpath=https%3A%2F%2Foauth.yandex.ru%2Fauthorize%3Fresponse_type%3Dtoken%26client_id%3D0d41a78f77084835b7d32ef535121cac&noreturn=1&origin=oauth";
         public string Token { get; private set; } = "";
         public bool IsTokenRecivied 
         {
@@ -96,12 +96,15 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
         {
             try
             {
+                //Парсим строку с целью найти токен
                 SetToken(uri.Split('=')[1].Split('&')[0]);
-                return true;
+                IsTokenRecivied = true;
+                return IsTokenRecivied;
             }
             catch
             {
-                return false;
+                IsTokenRecivied = false;
+                return IsTokenRecivied;
             }
         }
         /// <summary>
@@ -110,7 +113,9 @@ namespace CloudsLibrary.Cloud.YandexDisk.System
         /// <param name="token">Строка содержащая токен</param>
         public void SetToken(string token)
         {
+            //Запоминаем токен
             Token = token;
+            //Сообщаем подписавшимся объектам об успешном получении токена
             OnTokenReceived();
         }
         #endregion

@@ -20,9 +20,10 @@ namespace CloudsLibrary.Cloud.YandexDisk
         /// </summary>
         public YandexClient YandexClient {
             get {
-                if (DiskInformation.IsTokenRecivied == null)
+                //Если токен не доступен вызываем исключение
+                if (DiskInformation.IsTokenRecivied)
                 {
-                    throw new Exception("Клиент еще не создан. Необходимо получить токен для работы с облаком");
+                    throw new Exception("Отсутствует токен");
                 }
                 return _yandexClient;
             }
@@ -38,7 +39,8 @@ namespace CloudsLibrary.Cloud.YandexDisk
             //Подписываемся на событие получения токена что бы в нужное время создать объект клиента 
             //и разрешить взаимодействие с облаком
             DiskInformation.TokenReceived += () => {
-                YandexClient.DefaultRequestHeaders.Add("Authorization", "OAuth " + YDInformation.Token);
+                //Добавляем соответствующий заголовок в REST клиентдиска
+                YandexClient.DefaultRequestHeaders.Add("Authorization", "OAuth " + DiskInformation.Token);
             };
         }
     }

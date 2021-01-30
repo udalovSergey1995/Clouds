@@ -97,7 +97,7 @@ namespace CloudTest
                            };
                            var tokenFile = await localFolder.CreateFileAsync("token.txt");
                            var result = Information.YDInformation.SetTokenAsUri(path);
-                           await FileIO.WriteTextAsync(tokenFile, YDInformation.Token);
+                           await FileIO.WriteTextAsync(tokenFile, yandexDiskWorker.DiskInformation.Token);
                        }
                    };
                });
