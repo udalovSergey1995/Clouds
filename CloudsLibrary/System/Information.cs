@@ -9,7 +9,7 @@ namespace CloudsLibrary.System
 {
     public static class Information
     {
-        public static YDInformation YDInformation { get; set; } = new YDInformation();
+        //public static YDInformation YDInformation { get; set; } = new YDInformation();
         
     }
 }
